@@ -12,7 +12,6 @@ function Profile() {
   const [phone, setPhone] = useState(user?.phone);
   const [gender, setGender] = useState(user?.gender);
   const [birthday, setBirthday] = useState(user?.birthday);
-  // console.log(phone, gender, birthday);
 
   const navigator = useNavigate();
 
@@ -26,7 +25,6 @@ function Profile() {
         setUser(response.data.user);
       } catch (e) {
         const error = e.response.data.message;
-        console.log(error);
         Swal.fire({
           title: "Error!",
           text: `${error}!`,
@@ -57,7 +55,6 @@ function Profile() {
       { headers: { Authorization: `Bearer ${Cookies.get("auth-token")}` } }
     );
 
-    console.log(response);
     toast.success("success save");
     setTimeout(() => {
       location.reload();
@@ -65,11 +62,11 @@ function Profile() {
   };
 
   return (
-    <div className="container mx-auto mt-10">
+    <div className="container md:block lg:block flex items-center justify-center flex-col mx-auto mt-10">
       <div className="image">
         <img src={img_pro} width={"150px"} />
       </div>
-      <h1 className="text-3xl font-semibold my-5 border-b-2 pb-3 w-96">
+      <h1 className="text-3xl text-center lg:text-start md:text-start font-semibold my-5 border-b-2 pb-3 w-96">
         {user?.name}
       </h1>
       <div className="">

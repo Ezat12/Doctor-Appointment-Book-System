@@ -1,0 +1,15 @@
+@media (max-width: 1280px) {
+  .hero .btn {
+    margin-top: 20px;
+  }
+}
+@media (max-width: 767px) {
+  .content {
+    text-align: start;
+    align-items: start;
+    justify-content: start;
+    display: flex;
+    flex-direction: column;
+    /* margin-left: 45px; */
+  }
+}

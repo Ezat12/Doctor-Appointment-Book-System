@@ -5,7 +5,6 @@ function Contact() {
   return (
     <div className="contact container mx-auto">
       <div className="flex flex-col items-center justify-center px-6 pt-12 lg:flex-row">
-        {/* Left Image Section */}
         <div className="w-full lg:w-1/3">
           <img
             src={img_contact}
@@ -14,13 +13,11 @@ function Contact() {
           />
         </div>
 
-        {/* Right Text Section */}
         <div className="w-full mt-12 lg:w-1/2 lg:mt-0 lg:ml-12">
           <h2 className="text-3xl font-bold text-gray-800 mb-8">
             CONTACT <span className="text-blue-600">US</span>
           </h2>
 
-          {/* Office Information */}
           <div className="mb-8">
             <h3 className="text-xl font-semibold text-gray-800">OUR OFFICE</h3>
             <p className="text-gray-600 mt-2">
@@ -33,7 +30,6 @@ function Contact() {
             </p>
           </div>
 
-          {/* Careers Information */}
           <div>
             <h3 className="text-xl font-semibold text-gray-800">
               CAREERS AT PRESCRIPTO

@@ -9,8 +9,8 @@ function Footer() {
   }
 
   return (
-    <div className="footer container mx-auto mt-32">
-      <div className="grid grid-cols-[3fr_1fr_1fr] gap-14 pb-10  border-b">
+    <div className="footer container mx-auto lg:mt-24 md:mt-24 mt-16 p-5">
+      <div className="grid lg:grid-cols-[3fr_1fr_1fr] md:grid-cols-[3fr_1fr_1fr] grid-cols-[3fr] lg:gap-14 md:gap-14 gap-7 pb-10  border-b">
         <div>
           <img src={img_logo} className="w-52 " />
           <p className="w-full max-w-[550px] mt-5 leading-6 text-gray-600">

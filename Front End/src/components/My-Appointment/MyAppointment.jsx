@@ -66,7 +66,7 @@ function MyAppointment() {
   };
 
   return (
-    <div className="my-appointment container mx-auto mt-12">
+    <div className="my-appointment container mx-auto mt-12 lg:px-0 md:px-0 px-3">
       <h1 className="pb-3 border-b-2 text-lg font-semibold text-gray-700">
         My Appointment
       </h1>
@@ -75,10 +75,13 @@ function MyAppointment() {
           <RiseLoader />
         </div>
       )}
-      <div className="flex flex-col gap-4 mt-3">
+      <div className="flex flex-col gap-6 mt-3">
         {appointment.map((item, index) => {
           return (
-            <div key={index} className="flex justify-between pb-3 border-b">
+            <div
+              key={index}
+              className="flex flex-col gap-3 lg:flex-row md:flex-row justify-between pb-3 border-b"
+            >
               <div className="flex gap-4">
                 <div className="image bg-[#eaefff]">
                   <img width={"150px"} src={item.doctor.image} />
@@ -86,7 +89,7 @@ function MyAppointment() {
                 <div className="flex flex-col">
                   <p className="font-medium text-lg">Dr: {item.doctor.name}</p>
                   <p className="mt-2 text-gray-600">
-                  Day:{" "}
+                    Day:{" "}
                     <span className="font-medium text-black ml-2">
                       {item.date}
                     </span>

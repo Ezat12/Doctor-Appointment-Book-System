@@ -77,7 +77,7 @@ function Auth() {
 
   return (
     <div className="relative w-full h-[90vh]">
-      <div className="w-[450px]  rounded-md shadow-xl p-6 absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
+      <div className="lg:w-[450px] md:w-[450px] w-[360px]  rounded-md shadow-xl p-6 absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
         <h1 className="text-3xl font-mono text-center ">{contain} Form</h1>
         <div className="login-signup flex items-center rounded-md border mt-5 relative">
           <button

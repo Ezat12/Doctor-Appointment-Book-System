@@ -3,12 +3,12 @@ import img_about from "../../assets/about_image-MG9zrc7b.png";
 
 function About() {
   return (
-    <div className="container mx-auto mt-10">
+    <div className="container mx-auto mt-10 lg:px-0 md:px-0 px-4">
       <h1 className="text-2xl text-gray-800 uppercase font-semibold text-center">
         About Us
       </h1>
       <div className="flex gap-6 mt-8 items-center">
-        <div className="image">
+        <div className="image hidden lg:block">
           <img src={img_about} className="w-[750px]" />
         </div>
         <div>
@@ -38,7 +38,7 @@ function About() {
       <h3 className="text-xl text-gray-700 font-semibold uppercase mt-10">
         WHY CHOOSE US
       </h3>
-      <div className="grid grid-cols-3 mt-5">
+      <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 mt-5">
         <div className="border flex flex-col items-center justify-center p-10 transform duration-150 cursor-pointer hover:text-white  hover:bg-[#5f6fff]">
           <h3 className="uppercase text-gray-700 text-lg font-semibold">
             EFFICIENCY:

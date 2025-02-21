@@ -24,7 +24,7 @@ function Speciality() {
           your appointment hassle-free.
         </p>
       </div>
-      <div className="flex items-start justify-center gap-10 mt-10">
+      <div className="flex flex-wrap items-start justify-center gap-10 mt-10">
         {data.map((item, index) => {
           return (
             <Link

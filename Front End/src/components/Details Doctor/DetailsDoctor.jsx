@@ -17,9 +17,6 @@ function DetailsDoctor() {
   const [loading, setLoading] = useState(false);
   const [appointment, setAppointment] = useState([]);
 
-  console.log(chooseTime);
-  console.log(appointment);
-
   const navigator = useNavigate();
 
   useEffect(() => {
@@ -49,7 +46,6 @@ function DetailsDoctor() {
         setLoading(false);
       } catch (e) {
         const error = e.response.data.message;
-        console.log(error);
         Swal.fire({
           title: "Error!",
           text: `${error}!`,
@@ -98,7 +94,6 @@ function DetailsDoctor() {
         app.status !== "Completed"
     );
 
-    console.log(checkAppointment);
 
     if (checkAppointment !== -1) {
       return toast.warn("You have an appointment on this day");
@@ -116,7 +111,7 @@ function DetailsDoctor() {
         { headers: { Authorization: `Bearer ${Cookies.get("auth-token")}` } }
       )
       .catch((e) => {
-        console.log(e);
+        // console.log(e);
       });
 
     toast.promise(response, {
@@ -163,8 +158,8 @@ function DetailsDoctor() {
   const slotsFinal = slots.filter((time) => !timeAppointment?.includes(time));
 
   return (
-    <div className="container mx-auto mt-6 ">
-      <div className="content-doctor flex gap-4">
+    <div className="container mx-auto mt-6 lg:px-0 md:px-0 px-3">
+      <div className="content-doctor flex lg:flex-row md:flex-row flex-col gap-4">
         <div className="image bg-[#5f6fff] rounded-xl">
           <img src={state.image} width={"300px"} />
         </div>
@@ -187,7 +182,7 @@ function DetailsDoctor() {
         </div>
       </div>
       <div className="reservation mt-6">
-        <div className="flex items-center justify-center gap-5">
+        <div className="flex flex-wrap justify-start items-center lg:justify-center md:justify-center gap-5">
           {state.weeklySchedule.map((d, i) => {
             return (
               <div
@@ -206,7 +201,7 @@ function DetailsDoctor() {
           })}
         </div>
 
-        <div className="grid grid-cols-5 gap-6 border-2 rounded-xl mt-5 p-6">
+        <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-5 gap-6 border-2 rounded-xl mt-5 p-6">
           {!loading ? (
             slotsFinal.map((time, index) => {
               return (
