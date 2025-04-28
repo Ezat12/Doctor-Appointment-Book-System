@@ -103,7 +103,7 @@ function MyProfile() {
   // const handleSchedule = () => {};
 
   return (
-    <div className="my-profile">
+    <div className="my-profile ">
       <h2 className="text-lg font-medium">My Profile</h2>
       <div className="form flex gap-20 p-5 border rounded-sm bg-white mt-6">
         <div className="right gap-6">

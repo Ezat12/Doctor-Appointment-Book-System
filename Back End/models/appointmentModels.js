@@ -25,6 +25,10 @@ const appointmentSchema = new mongoose.Schema(
       enum: ["Scheduled", "Completed", "Cancelled"],
       default: "Scheduled",
     },
+    is_paid: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

@@ -8,6 +8,8 @@ import { useNavigate } from "react-router";
 import Appointments from "../Appointments/Appointments";
 import AddDoctor from "../Add Doctor/AddDoctor";
 import ListDoctor from "../List Doctor/ListDoctor";
+import AppointmentCancelled from "../Appointment Cancelled/AppointmentCancelled";
+import AppointmentCompleted from "../Appointment Completed/AppointmentCompleted";
 
 function Home() {
   const [content, setContent] = useState(
@@ -15,6 +17,10 @@ function Home() {
       ? "Appointments"
       : location.pathname.split("/")[2] === "add-doctor"
       ? "Add Doctor"
+      : location.pathname.split("/")[2] === "appointment-cancelled"
+      ? "Appointments Cancelled"
+      : location.pathname.split("/")[2] === "appointment-completed"
+      ? "Appointments Completed"
       : "Doctors List"
   );
   const navigator = useNavigate();
@@ -25,8 +31,10 @@ function Home() {
       navigator("/admin/appointment");
     } else if (e.target.innerHTML.split(">")[1] === "Add Doctor") {
       navigator("/admin/add-doctor");
+    } else if (e.target.innerHTML.split(">")[1] === "Appointments Cancelled") {
+      navigator("/admin/appointment-cancelled");
     } else {
-      navigator("/admin/list-doctor");
+      navigator("/admin/appointment-completed")
     }
   };
 
@@ -46,6 +54,28 @@ function Home() {
             >
               <img src={img_appointment} />
               Appointments
+            </li>
+            <li
+              onClick={handleChangeContent}
+              className={
+                content === "Appointments Cancelled"
+                  ? "px-7 py-5 font-medium flex items-center gap-3 bg-[#f2f3ff] border-r-4 border-[#5f6fff] cursor-pointer"
+                  : "px-7 py-5 font-medium flex items-center gap-3 cursor-pointer "
+              }
+            >
+              <img src={img_appointment} />
+              Appointments Cancelled
+            </li>
+            <li
+              onClick={handleChangeContent}
+              className={
+                content === "Appointments Completed"
+                  ? "px-7 py-5 font-medium flex items-center gap-3 bg-[#f2f3ff] border-r-4 border-[#5f6fff] cursor-pointer"
+                  : "px-7 py-5 font-medium flex items-center gap-3 cursor-pointer "
+              }
+            >
+              <img src={img_appointment} />
+              Appointments Completed
             </li>
             <li
               onClick={handleChangeContent}
@@ -76,6 +106,10 @@ function Home() {
             <Appointments />
           ) : content === "Add Doctor" ? (
             <AddDoctor />
+          ) : content === "Appointments Cancelled" ? (
+            <AppointmentCancelled />
+          ) : content === "Appointments Completed" ? (
+            <AppointmentCompleted />
           ) : (
             <ListDoctor />
           )}

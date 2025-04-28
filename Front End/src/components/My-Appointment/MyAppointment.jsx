@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
@@ -5,6 +7,7 @@ import { PropagateLoader, RiseLoader } from "react-spinners";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router";
+import { PiChecksBold } from "react-icons/pi";
 
 function MyAppointment() {
   const [appointment, setAppointment] = useState([]);
@@ -45,7 +48,10 @@ function MyAppointment() {
     fetchData();
   }, [change]);
 
-  const handleClickCancel = async (id) => {
+  const handleClickCancel = async (id, isPaid) => {
+    // if (!isPaid) {
+
+    // }
     const response = axios.delete(
       `${
         import.meta.env.VITE_BASE_URL_SERVER
@@ -108,22 +114,40 @@ function MyAppointment() {
                   </p>
                 </div>
               </div>
-              {item.status !== "Completed" ? (
+              {item.status === "Scheduled" ? (
                 <div className="flex gap-2 flex-col justify-end">
-                  <button className="border rounded-md py-2 px-10 transform duration-200 text-gray-600 hover:text-white hover:border-[#5f6fff] hover:bg-[#5f6fff] ">
-                    Pay Online
-                  </button>
+                  {item.is_paid ? (
+                    <div className="group">
+                      <button className="border w-full rounded-md py-2 px-10 transform duration-200 text-gray-600 flex gap-4 items-center justify-center hover:text-white hover:border-green-500 hover:bg-green-500">
+                        Paid
+                        <PiChecksBold
+                          size={"25px"}
+                          className="text-green-500 group-hover:text-white"
+                        />
+                      </button>
+                    </div>
+                  ) : (
+                    <button className="border rounded-md py-2 px-10 transform duration-200 text-gray-600 hover:text-white hover:border-[#5f6fff] hover:bg-[#5f6fff] ">
+                      Pay Online
+                    </button>
+                  )}
                   <button
-                    onClick={() => handleClickCancel(item._id)}
+                    onClick={() => handleClickCancel(item._id, item.is_paid)}
                     className="border rounded-md py-2 px-10 text-gray-600 transform duration-200  hover:text-white hover:border-[#ef4444] hover:bg-[#ef4444] "
                   >
                     Cancel appointment
                   </button>
                 </div>
+              ) : item.status === "Cancelled" ? (
+                <div className="flex gap-2 flex-col justify-end">
+                  <button className="border rounded-md py-2 px-10 text-white bg-[#ef4444] transform duration-200  border-[#ef4444] cursor-default">
+                    Cancelled
+                  </button>
+                </div>
               ) : (
                 <div className="flex gap-2 flex-col justify-end">
                   <button
-                    onClick={() => handleClickCancel(item._id)}
+                    // onClick={() => handleClickCancel(item._id)}
                     className="border rounded-md py-2 px-10 text-gray-600 transform duration-200  hover:text-white hover:border-[#ef4444] hover:bg-[#ef4444]"
                   >
                     Deleted

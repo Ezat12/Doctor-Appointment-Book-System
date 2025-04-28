@@ -1,11 +1,11 @@
-import React from "react";
 import Cookies from "js-cookie";
-import { useState } from "react";
 import img_logo from "../../assets/logo-BNCDj_dh.svg";
 import { useNavigate } from "react-router";
 
 function Navbar() {
   const navigator = useNavigate();
+
+  const pathName = location.pathname.split("/")[1] === "doctor";
 
   const handleLogout = () => {
     Cookies.remove("token");
@@ -17,7 +17,7 @@ function Navbar() {
       <div className="logo flex items-center gap-4">
         <img src={img_logo} width={"150px"} />
         <div className="text-gray-600 border-gray-700 border mt-3 rounded-2xl p-1 px-3 text-sm">
-          Admin
+          {pathName ? "Doctor" : "Admin"}
         </div>
       </div>
       <button

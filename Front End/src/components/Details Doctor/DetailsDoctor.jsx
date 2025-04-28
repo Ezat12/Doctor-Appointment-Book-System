@@ -83,7 +83,7 @@ function DetailsDoctor() {
       toast("Login to book appointment");
       return navigator("/auth");
     }
-    if (chooseTime === -1 || !chooseTime) {
+    if (chooseTime === -1) {
       return toast.warn("Choose Time");
     }
 
@@ -93,7 +93,6 @@ function DetailsDoctor() {
         app.doctor._id === state._id &&
         app.status !== "Completed"
     );
-
 
     if (checkAppointment !== -1) {
       return toast.warn("You have an appointment on this day");

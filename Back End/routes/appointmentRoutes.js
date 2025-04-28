@@ -7,6 +7,8 @@ const {
   getAllTimeAppointmentByDay,
   getAppointmentUser,
   getAppointmentDoctor,
+  paidAppointment,
+  cancelPaidAppointment,
 } = require("../server/appointment-server");
 const router = express.Router();
 const { protectAuth, allowedTo } = require("../server/auth-server");
@@ -42,5 +44,17 @@ router
 router
   .route("/complete-appointment/:id")
   .put(protectAuth, allowedTo("admin", "doctor", "user"), completedAppointment);
+
+router
+  .route("/paid-appointment/:id")
+  .patch(protectAuth, allowedTo("admin", "user", "doctor"), paidAppointment);
+
+router
+  .route("/cancel-paidAppointment/:id")
+  .patch(
+    protectAuth,
+    allowedTo("admin", "user", "doctor"),
+    cancelPaidAppointment
+  );
 
 module.exports = router;

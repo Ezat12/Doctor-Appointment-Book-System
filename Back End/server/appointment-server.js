@@ -21,8 +21,6 @@ const getAppointmentDoctor = asyncErrorHandler(async (req, res, next) => {
 });
 
 const createAppointment = asyncErrorHandler(async (req, res, next) => {
-  console.log(req.body);
-
   const { idDoctor } = req.params;
 
   const doctor = await Doctor.findById(idDoctor);
@@ -54,22 +52,10 @@ const createAppointment = asyncErrorHandler(async (req, res, next) => {
 const cancelAppointment = asyncErrorHandler(async (req, res, next) => {
   const { id } = req.params;
 
-  const appointment = await Appointment.findByIdAndDelete(id);
-
-  if (!appointment) {
-    return next(new ApiError(`not found appointment by id => ${id}`, 400));
-  }
-
-  res.status(201).json({ status: "success cancel" });
-});
-
-const completedAppointment = asyncErrorHandler(async (req, res, next) => {
-  const { id } = req.params;
-
   const appointment = await Appointment.findByIdAndUpdate(
     id,
     {
-      status: "Completed",
+      status: "Cancelled",
     },
     { new: true }
   );
@@ -78,12 +64,81 @@ const completedAppointment = asyncErrorHandler(async (req, res, next) => {
     return next(new ApiError(`not found appointment by id => ${id}`, 400));
   }
 
-  res.status(201).json({ status: "success", data: appointment });
+  res.status(201).json({ status: "success cancel", data: appointment });
+});
+
+const completedAppointment = asyncErrorHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  const appointment = await Appointment.findById(id);
+
+  if (!appointment) {
+    return next(new ApiError(`not found appointment by id => ${id}`, 400));
+  }
+
+  if (!appointment.is_paid) {
+    return next(
+      new ApiError(
+        `The outstanding amount has not been paid by the patient yet.`,
+        400
+      )
+    );
+  }
+
+  appointment.status = "Completed";
+
+  await appointment.save();
+
+  const getAppointment = await Appointment.findById(id);
+
+  // const appointment = await Appointment.findByIdAndUpdate(
+  //   id,
+  //   {
+  //     status: "Completed",
+  //   },
+  //   { new: true }
+  // );
+
+  res.status(201).json({ status: "success", data: getAppointment });
+});
+
+const paidAppointment = asyncErrorHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  const appointment = await Appointment.findByIdAndUpdate(
+    id,
+    {
+      is_paid: true,
+    },
+    { new: true }
+  );
+
+  if (!appointment) {
+    return next(new ApiError("not found appointment by id", 404));
+  }
+
+  res.status(200).json({ status: "success", data: appointment });
+});
+
+const cancelPaidAppointment = asyncErrorHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  const appointment = await Appointment.findByIdAndUpdate(
+    id,
+    {
+      is_paid: false,
+    },
+    { new: true }
+  );
+
+  if (!appointment) {
+    return next(new ApiError(`not found appointment by id => ${id}`, 400));
+  }
+
+  res.status(200).json({ status: "success", data: appointment });
 });
 
 const getAllTimeAppointmentByDay = asyncErrorHandler(async (req, res, next) => {
-  console.log(req.body);
-
   const appointment = await Appointment.find({
     doctor: req.params.idDoctor,
     date: req.body.date,
@@ -107,4 +162,6 @@ module.exports = {
   getAllTimeAppointmentByDay,
   getAppointmentUser,
   getAppointmentDoctor,
+  paidAppointment,
+  cancelPaidAppointment,
 };
