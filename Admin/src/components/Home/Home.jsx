@@ -10,6 +10,7 @@ import AddDoctor from "../Add Doctor/AddDoctor";
 import ListDoctor from "../List Doctor/ListDoctor";
 import AppointmentCancelled from "../Appointment Cancelled/AppointmentCancelled";
 import AppointmentCompleted from "../Appointment Completed/AppointmentCompleted";
+import Chat from "../Chat/Chat";
 
 function Home() {
   const [content, setContent] = useState(
@@ -34,7 +35,7 @@ function Home() {
     } else if (e.target.innerHTML.split(">")[1] === "Appointments Cancelled") {
       navigator("/admin/appointment-cancelled");
     } else {
-      navigator("/admin/appointment-completed")
+      navigator("/admin/appointment-completed");
     }
   };
 
@@ -114,6 +115,7 @@ function Home() {
             <ListDoctor />
           )}
         </div>
+        {<Chat />}
       </div>
     </div>
   );

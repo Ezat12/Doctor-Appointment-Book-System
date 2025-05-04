@@ -5,16 +5,20 @@ import Cookies from "js-cookie";
 import { CgProfile } from "react-icons/cg";
 import { IoIosArrowDown } from "react-icons/io";
 import { AiOutlineMenu } from "react-icons/ai";
+import { useDispatch } from "react-redux";
+import { logout } from "../../rtk/slices/authSlice";
 
 function Navbar() {
   const [active, setActive] = useState(false);
   const [pathName, usePathName] = useState(location.pathname);
   const [dropDown, setDropDown] = useState(false);
 
+  const dispatch = useDispatch();
   const navigator = useNavigate();
 
   const handleClickLogin = () => {
     Cookies.remove("auth-token");
+    dispatch(logout());
     location.href = "/";
     location.reload;
   };
@@ -77,6 +81,16 @@ function Navbar() {
             }`}
           >
             CONTACT
+          </Link>
+          <Link
+            to={"/chat"}
+            className={`cursor-pointer transform duration-75 ${
+              location.pathname === "/contact"
+                ? "border-b-2 border-[#5f6fff]"
+                : ""
+            }`}
+          >
+            Chat
           </Link>
         </ul>
         <div className="btn flex gap-3 items-center relative">

@@ -61,10 +61,23 @@ const deleteUser = asyncErrorHandler(async (req, res, next) => {
 
   res.status(200).json({ status: "success deleted" });
 });
+
+const getAdmins = asyncErrorHandler(async (req, res, next) => {
+  const admins = await User.find({ role: "admin" }).select("_id name email");
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      admins,
+    },
+  });
+});
+
 module.exports = {
   createUser,
   getAllUser,
   getSpecifyUser,
   updateUser,
   deleteUser,
+  getAdmins,
 };

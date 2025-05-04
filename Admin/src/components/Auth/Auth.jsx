@@ -1,10 +1,12 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import { useState } from "react";
 import { SyncLoader } from "react-spinners";
 import { useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../rtk/slices/authSlice";
 
 function Auth() {
   const [login, setLogin] = useState("Admin");
@@ -12,6 +14,8 @@ function Auth() {
   const [password, setPassword] = useState("123456");
   const [accept, setAccept] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch();
 
   const navigator = useNavigate();
 
@@ -37,6 +41,7 @@ function Auth() {
         } else {
           toast.error("the email or password is not correct");
         }
+        dispatch(setUser(response.data.user));
         setLoading(false);
       } catch (e) {
         const error = e.response.data.message;

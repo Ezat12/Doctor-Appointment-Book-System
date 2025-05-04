@@ -4,6 +4,8 @@ import { SyncLoader } from "react-spinners";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "../rtk/slices/authSlice";
 
 function Auth() {
   const [contain, setContain] = useState("Login");
@@ -14,6 +16,8 @@ function Auth() {
   const [accept, setAccept] = useState(false);
   const [loading, setLoading] = useState(false);
 
+
+  const dispatch = useDispatch();
   const navigator = useNavigate();
 
   const signup = async () => {
@@ -24,8 +28,9 @@ function Auth() {
         `${import.meta.env.VITE_BASE_URL_SERVER}/signup`,
         data
       );
-
+      dispatch(setUser(response.data.user));
       Cookies.set("auth-token", response.data.token);
+
       toast.success("success login");
       navigator("/");
     } catch (e) {
@@ -44,6 +49,7 @@ function Auth() {
       );
 
       Cookies.set("auth-token", response.data.token);
+      dispatch(setUser(response.data.user));
       toast.success("success login");
       navigator("/");
     } catch (e) {

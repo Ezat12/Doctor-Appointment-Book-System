@@ -52,7 +52,6 @@ const protectAuth = asyncErrorHandler(async (req, res, next) => {
   }
 
   const decoded = jwt.verify(token, process.env.SECRET_PRIVATE_KEY);
-  console.log(decoded);
 
   let currentUser;
 
@@ -63,7 +62,6 @@ const protectAuth = asyncErrorHandler(async (req, res, next) => {
   }
 
   req.user = currentUser;
-  console.log(req.user);
 
   next();
 });

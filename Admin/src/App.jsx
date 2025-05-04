@@ -8,7 +8,6 @@ import Home from "./components/Home/Home";
 import Doctor from "./components/Doctor/Doctor";
 
 function App() {
-
   return (
     <>
       <Routes>

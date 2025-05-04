@@ -12,6 +12,7 @@ const messageSchema = new mongoose.Schema(
       ref: "User",
       required: [true, "Receiver Must be Required"],
     },
+
     message: {
       type: String,
       required: [true, "Message Must be Required"],
@@ -23,5 +24,16 @@ const messageSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+messageSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "sender",
+    select: "_id name email phone gender role",
+  }).populate({
+    path: "receiver",
+    select: "_id name email phone gender role",
+  });
+  next();
+});
 
 module.exports = mongoose.model("Message", messageSchema);

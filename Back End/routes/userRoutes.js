@@ -10,10 +10,12 @@ const {
   getSpecifyUser,
   updateUser,
   deleteUser,
+  getAdmins,
 } = require("../server/user-server");
 const { protectAuth, allowedTo } = require("../server/auth-server");
 const router = express.Router();
 
+router.route("/admins").get(protectAuth, getAdmins);
 router.route("/getDataUser").get(protectAuth, getSpecifyUser);
 router.route("/updateDataUser").put(protectAuth, updateUser);
 
