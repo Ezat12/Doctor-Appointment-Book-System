@@ -13,28 +13,28 @@ import Footer from "./components/Footer/Footer";
 import About from "./components/About/About";
 import Contact from "./components/Contact/Contact";
 import Chat from "./components/Chat/Chat";
-import { useDispatch } from "react-redux";
-import axios from "axios";
-import Cookies from "js-cookie";
-import { setUser } from "./rtk/slices/authSlice";
+// import { useDispatch } from "react-redux";
+// import axios from "axios";
+// import Cookies from "js-cookie";
+// import { setUser } from "./rtk/slices/authSlice";
 
 function App() {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
-  useEffect(() => {
-    const fetchDate = async () => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL_SERVER}/user/getDataUser`,
-        { headers: { Authorization: `Bearer ${Cookies.get("auth-token")}` } }
-      );
+  // useEffect(() => {
+  //   const fetchDate = async () => {
+  //     const response = await axios.get(
+  //       `${import.meta.env.VITE_BASE_URL_SERVER}/user/getDataUser`,
+  //       { headers: { Authorization: `Bearer ${Cookies.get("auth-token")}` } }
+  //     );
 
-      dispatch(setUser(response?.data?.user));
-    };
+  //     dispatch(setUser(response?.data?.user));
+  //   };
 
-    if (Cookies.get("auth-token")) {
-      fetchDate();
-    }
-  }, [dispatch]);
+  //   if (Cookies.get("auth-token")) {
+  //     fetchDate();
+  //   }
+  // }, [dispatch]);
 
   return (
     <>
@@ -50,6 +50,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/chat" element={<Chat />} />
       </Routes>
+      <Chat />
       <Footer />
       <ToastContainer />
     </>
