@@ -15,9 +15,10 @@ const doctorRoute = require("./routes/doctorRoutes");
 const authDoctorRoute = require("./routes/authDoctorRoutes");
 const appointmentRoute = require("./routes/appointmentRoutes");
 const messageRoute = require("./routes/messageRoutes");
-const { asyncErrorHandler } = require("express-error-catcher");
-const User = require("./models/userModels");
-const Message = require("./models/messageModels");
+// const { asyncErrorHandler } = require("express-error-catcher");
+// const User = require("./models/userModels");
+// const Message = require("./models/messageModels");
+const { handlerMessage } = require("./utils/socketHandler/handlerMessage");
 
 const server = createServer(app);
 const io = new Server(server, {
@@ -42,33 +43,7 @@ io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
 
   socket.on("sendMessage", async (data) => {
-    console.log("Hello");
-    try {
-      const { message, sender, receiver } = data;
-
-      const senderUser = await User.findById(sender);
-      const receiverUser = await User.findById(receiver);
-
-      if (!senderUser || !receiverUser) {
-        throw new Error("Sender or receiver not found");
-      }
-
-      const newMessage = await Message.create({
-        message,
-        sender,
-        receiver,
-      });
-
-      const populatedMessage = await Message.findById(newMessage._id)
-        .populate("sender", "_id name role")
-        .populate("receiver", "_id name role");
-
-      io.to(socket.id).emit("newMessage", populatedMessage);
-      socket.broadcast.emit("newMessage", populatedMessage);
-    } catch (error) {
-      console.error("Error handling message:", error);
-      socket.emit("error", { message: "Failed to send message" });
-    }
+    handlerMessage(io, socket, data);
   });
 
   socket.on("disconnect", () => {
