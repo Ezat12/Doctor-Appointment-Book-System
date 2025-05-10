@@ -1,6 +1,7 @@
 import Cookies from "js-cookie";
 import img_logo from "../../assets/logo-BNCDj_dh.svg";
 import { useNavigate } from "react-router";
+import Notification from "../Notification/Notification";
 
 function Navbar() {
   const navigator = useNavigate();
@@ -9,6 +10,7 @@ function Navbar() {
 
   const handleLogout = () => {
     Cookies.remove("token");
+    Cookies.remove("user");
     navigator("/");
   };
 
@@ -20,12 +22,15 @@ function Navbar() {
           {pathName ? "Doctor" : "Admin"}
         </div>
       </div>
-      <button
-        onClick={handleLogout}
-        className="py-2 px-10 font-medium rounded-3xl bg-[#5f6fff] text-white"
-      >
-        Logout
-      </button>
+      <div className="flex items-center gap-6">
+        <Notification />
+        <button
+          onClick={handleLogout}
+          className="py-2 px-10 font-medium rounded-3xl bg-[#5f6fff] text-white"
+        >
+          Logout
+        </button>
+      </div>
     </div>
   );
 }
