@@ -15,9 +15,8 @@ const doctorRoute = require("./routes/doctorRoutes");
 const authDoctorRoute = require("./routes/authDoctorRoutes");
 const appointmentRoute = require("./routes/appointmentRoutes");
 const messageRoute = require("./routes/messageRoutes");
-// const { asyncErrorHandler } = require("express-error-catcher");
-// const User = require("./models/userModels");
-// const Message = require("./models/messageModels");
+const notificationRoute = require("./routes/notificationRoutes");
+
 const { handlerMessage } = require("./utils/socketHandler/handlerMessage");
 
 const server = createServer(app);
@@ -39,6 +38,8 @@ app.use(express.json());
 dbConnection();
 
 //Socket Io
+const connectedUsers = {};
+
 io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
 
@@ -46,10 +47,24 @@ io.on("connection", (socket) => {
     handlerMessage(io, socket, data);
   });
 
+  socket.on("register", (userId) => {
+    connectedUsers[userId] = socket.id;
+    console.log(`user id ${userId} register with id ${socket.id}`);
+  });
+
   socket.on("disconnect", () => {
+    for (let userId in connectedUsers) {
+      if (connectedUsers[userId] === socket.id) {
+        delete connectedUsers[userId];
+        break;
+      }
+    }
     console.log("Client disconnected:", socket.id);
   });
 });
+
+app.set("io", io);
+app.set("connectedUsers", connectedUsers);
 
 app.use("/user", userRoute);
 
@@ -64,6 +79,8 @@ app.use("/doctor", doctorRoute);
 app.use("/appointment", appointmentRoute);
 
 app.use("/message", messageRoute);
+
+app.use("/notification", notificationRoute);
 
 app.all("*", (req, res, next) => {
   next(new ApiError(`the route is not success ${req.originalUrl}`, 404));
