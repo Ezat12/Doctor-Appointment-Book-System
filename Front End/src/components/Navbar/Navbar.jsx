@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import img_logo from "../../assets/logo-BNCDj_dh.svg";
 import { Link, useNavigate } from "react-router";
 import Cookies from "js-cookie";
 import { CgProfile } from "react-icons/cg";
 import { IoIosArrowDown } from "react-icons/io";
 import { AiOutlineMenu } from "react-icons/ai";
+import { IoMdNotifications } from "react-icons/io";
 import { useDispatch } from "react-redux";
 import { logout } from "../../rtk/slices/authSlice";
+import Notification from "../Notification/Notification";
 
 function Navbar() {
   const [active, setActive] = useState(false);
@@ -18,6 +20,7 @@ function Navbar() {
 
   const handleClickLogin = () => {
     Cookies.remove("auth-token");
+    Cookies.remove("patient");
     dispatch(logout());
     location.href = "/";
     location.reload;
@@ -82,16 +85,6 @@ function Navbar() {
           >
             CONTACT
           </Link>
-          <Link
-            to={"/chat"}
-            className={`cursor-pointer transform duration-75 ${
-              location.pathname === "/contact"
-                ? "border-b-2 border-[#5f6fff]"
-                : ""
-            }`}
-          >
-            Chat
-          </Link>
         </ul>
         <div className="btn flex gap-3 items-center relative">
           <div className="More drop-down lg:hidden md:hidden ">
@@ -155,7 +148,12 @@ function Navbar() {
               Create account
             </Link>
           ) : (
-            <div className="relative">
+            <div className="relative flex items-center gap-5">
+              {
+                <div className="relative">
+                  <Notification />
+                </div>
+              }
               <div
                 onClick={() => setActive(!active)}
                 className="text-2xl flex items-center gap-1 cursor-pointer"
