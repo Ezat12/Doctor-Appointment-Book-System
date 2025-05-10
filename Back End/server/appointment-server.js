@@ -1,7 +1,10 @@
 const Appointment = require("../models/appointmentModels");
 const Doctor = require("../models/doctorModels");
+const User = require("../models/userModels");
 const { asyncErrorHandler } = require("express-error-catcher");
 const ApiError = require("../utils/apiError");
+const { sendNotification } = require("./notification-server");
+const sendEmail = require("../utils/sendEmail");
 
 const getAllAppointment = asyncErrorHandler(async (req, res, next) => {
   const appointments = await Appointment.find({});
@@ -46,7 +49,40 @@ const createAppointment = asyncErrorHandler(async (req, res, next) => {
     time: req.body.time,
   });
 
+  // create notification to admin
+  const io = req.app.get("io");
+  const connectedUsers = req.app.get("connectedUsers");
+  const admin = await User.findOne({ role: "admin" });
+
+  await sendNotification(
+    io,
+    connectedUsers,
+    admin._id,
+    "new_appointment",
+    `New Appointment Scheduled by Patient ${req.user.name} for Doctor ${
+      doctor.name
+    } on ${new Date().toLocaleString()}`
+  );
+
+  // create Notification to Patient
+  await sendNotification(
+    io,
+    connectedUsers,
+    req.user._id,
+    "new_appointment",
+    `Your Appointment with Doctor ${
+      doctor.name
+    } on ${new Date().toLocaleString()} has been confirmed.`
+  );
   res.status(200).json({ status: "success", data: appointment });
+
+  await sendEmail(
+    "new",
+    req.user.name,
+    doctor.name,
+    new Date().toLocaleString(),
+    admin.email
+  );
 });
 
 const cancelAppointment = asyncErrorHandler(async (req, res, next) => {
@@ -64,7 +100,58 @@ const cancelAppointment = asyncErrorHandler(async (req, res, next) => {
     return next(new ApiError(`not found appointment by id => ${id}`, 400));
   }
 
+  const io = req.app.get("io");
+  const connectedUsers = req.app.get("connectedUsers");
+  const admin = await User.findOne({ role: "admin" });
+
+  const user = await User.findById(appointment.user);
+
+  // Create Notification to Admin
+  if (req.user.role === "admin") {
+    /// Notification User
+    await sendNotification(
+      io,
+      connectedUsers,
+      user._id,
+      "appointment_cancelled",
+      req.user.role === "user"
+        ? `The appointment with Dr. ${appointment.doctor.name} for patient ${user.name} has been cancelled`
+        : `The appointment with Dr. ${appointment.doctor.name} has been cancelled by the Admin.`
+    );
+  } else {
+    /// Notification Admin
+    await sendNotification(
+      io,
+      connectedUsers,
+      admin._id,
+      "appointment_cancelled",
+      req.user.role === "admin"
+        ? `The appointment with Dr. ${appointment.doctor.name} for patient ${user.name} has been cancelled`
+        : `The appointment with Dr. ${appointment.doctor.name} has been cancelled by the patient, ${user.name}.`
+    );
+  }
+
   res.status(201).json({ status: "success cancel", data: appointment });
+
+  if (req.user.role === "admin") {
+    // create Notification to Patient
+    await sendEmail(
+      "cancelled",
+      user.name,
+      appointment.doctor.name,
+      new Date().toLocaleString(),
+      user.email
+    );
+  } else {
+    // create Notification tp admin
+    await sendEmail(
+      "cancelled",
+      user.name,
+      appointment.doctor.name,
+      new Date().toLocaleString(),
+      admin.email
+    );
+  }
 });
 
 const completedAppointment = asyncErrorHandler(async (req, res, next) => {
@@ -91,15 +178,39 @@ const completedAppointment = asyncErrorHandler(async (req, res, next) => {
 
   const getAppointment = await Appointment.findById(id);
 
-  // const appointment = await Appointment.findByIdAndUpdate(
-  //   id,
-  //   {
-  //     status: "Completed",
-  //   },
-  //   { new: true }
+  const io = req.app.get("io");
+  const connectedUsers = req.app.get("connectedUsers");
+  const admin = await User.findOne({ role: "admin" });
+
+  const user = await User.findById(appointment.user);
+
+  // Create Notification to Admin
+  // await sendNotification(
+  //   io,
+  //   connectedUsers,
+  //   admin._id,
+  //   "appointment_completed",
+  //   `The appointment for patient ${user.name} with Dr. ${appointment.doctor.name} has been completed.`
   // );
 
+  // create Notification to Patient
+  await sendNotification(
+    io,
+    connectedUsers,
+    user._id,
+    "appointment_completed",
+    `The appointment with Dr. ${appointment.doctor.name} has been completed`
+  );
+
   res.status(201).json({ status: "success", data: getAppointment });
+
+  await sendEmail(
+    "completed",
+    user.name,
+    appointment.doctor.name,
+    new Date().toLocaleString(),
+    user.email
+  );
 });
 
 const paidAppointment = asyncErrorHandler(async (req, res, next) => {

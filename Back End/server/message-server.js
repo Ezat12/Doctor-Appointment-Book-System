@@ -40,8 +40,6 @@ const getConversation = asyncErrorHandler(async (req, res, next) => {
 const getAllConversationToAdmin = asyncErrorHandler(async (req, res, next) => {
   const getAllMessage = await Message.find({ receiver: req.user._id });
 
-  console.log(getAllMessage);
-
   let messagesToAdmin = [];
 
   getAllMessage.map((message, i) => {
