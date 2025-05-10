@@ -1,0 +1,119 @@
+const nodemailer = require("nodemailer");
+
+const sendEmail = async (
+  type,
+  patientName,
+  doctorName,
+  appointmentDate = null,
+  to
+) => {
+  const transporter = nodemailer.createTransport({
+    host: process.env.HOST_EMAIL,
+    port: process.env.PORT_EMAIL,
+    auth: {
+      user: process.env.USER_EMAIL,
+      pass: process.env.PASS_EMAIL,
+    },
+  });
+
+  console.log("email to", to);
+
+  const emailTemplates = {
+    new: {
+      subject: `New Appointment Scheduled with Dr. ${doctorName}`,
+      headerColor: "#4CAF50",
+      statusText: "scheduled",
+      actionButton: true,
+      buttonText: "View Appointment Details",
+      link: "http://localhost:5174/admin/appointment",
+    },
+    cancelled: {
+      subject: `Appointment with Dr. ${doctorName} Cancelled`,
+      headerColor: "#f44336",
+      statusText: "cancelled",
+      actionButton: true,
+      buttonText: "Reschedule Appointment",
+      link: "",
+    },
+    completed: {
+      subject: `Appointment with Dr. ${doctorName} Completed`,
+      headerColor: "#2196F3",
+      statusText: "completed",
+      actionButton: false,
+      footerNote: "We hope to see you again soon!",
+      link: "http://localhost:5173/my-appointment",
+    },
+  };
+
+  const template =
+    emailTemplates[type.toLowerCase()] || emailTemplates.cancelled;
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden; }
+        .header { background-color: ${
+          template.headerColor
+        }; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; }
+        .footer { background-color: #f5f5f5; padding: 10px; text-align: center; font-size: 12px; color: #777; }
+        .button { display: inline-block; background-color: ${
+          template.headerColor
+        }; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-top: 15px; }
+        .appointment-date { font-weight: bold; color: ${template.headerColor}; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Appointment ${template.statusText.toUpperCase()}</h1>
+        </div>
+        <div class="content">
+          <p>Dear <strong>${patientName}</strong>,</p>
+          <p>Your appointment with <strong>Dr. ${doctorName}</strong> has been 
+          <span style="color: ${template.headerColor};">${
+    template.statusText
+  }</span>.</p>
+          
+          ${
+            appointmentDate
+              ? `<p>Scheduled for: <span class="appointment-date">${new Date(
+                  appointmentDate
+                ).toLocaleString()}</span></p>`
+              : ""
+          }
+          
+          ${
+            template.actionButton
+              ? `
+            <a href="http://localhost:5173/doctors" class="button">
+              ${template.buttonText}
+            </a>
+          `
+              : ""
+          }
+        </div>
+        <div class="footer">
+          <p>${
+            template.footerNote ||
+            "Please contact us if you have any questions."
+          }</p>
+          <p>© ${new Date().getFullYear()} Medical Clinic. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  await transporter.sendMail({
+    from: `"Medical Clinic" <${process.env.USER_EMAIL}>`,
+    to,
+    subject: template.subject,
+    html: html,
+  });
+};
+
+module.exports = sendEmail;
