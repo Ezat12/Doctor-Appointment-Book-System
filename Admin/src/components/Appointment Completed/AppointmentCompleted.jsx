@@ -42,6 +42,7 @@ function AppointmentsCompleted() {
         }).then((result) => {
           if (result.isConfirmed) {
             Cookies.remove("token");
+            Cookies.remove("user");
             navigator("/");
           }
         });
