@@ -13,6 +13,7 @@ import Footer from "./components/Footer/Footer";
 import About from "./components/About/About";
 import Contact from "./components/Contact/Contact";
 import Chat from "./components/Chat/Chat";
+import WelcomeMessage from "./components/Welcome Message/WelcomeMessage";
 // import { useDispatch } from "react-redux";
 // import axios from "axios";
 // import Cookies from "js-cookie";
@@ -39,6 +40,7 @@ function App() {
   return (
     <>
       <Navbar />
+      <WelcomeMessage />
       <Routes>
         <Route path="/" element={<Hero />} />
         <Route path="/auth" element={<Auth />} />

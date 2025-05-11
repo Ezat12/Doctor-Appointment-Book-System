@@ -15,6 +15,8 @@ const doctorRoute = require("./routes/doctorRoutes");
 const authDoctorRoute = require("./routes/authDoctorRoutes");
 const appointmentRoute = require("./routes/appointmentRoutes");
 const messageRoute = require("./routes/messageRoutes");
+const reviewRoute = require("./routes/reviewRoutes");
+const paymentRoute = require("./routes/paymentCreditCardRoutes");
 const notificationRoute = require("./routes/notificationRoutes");
 
 const { handlerMessage } = require("./utils/socketHandler/handlerMessage");
@@ -81,6 +83,10 @@ app.use("/appointment", appointmentRoute);
 app.use("/message", messageRoute);
 
 app.use("/notification", notificationRoute);
+
+app.use("/review", reviewRoute);
+
+app.use("/payment", paymentRoute);
 
 app.all("*", (req, res, next) => {
   next(new ApiError(`the route is not success ${req.originalUrl}`, 404));

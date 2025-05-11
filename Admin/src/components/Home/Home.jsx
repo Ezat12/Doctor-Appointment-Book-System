@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router";
 import img_appointment from "../../assets/Appointment.svg";
 import img_AddDoctor from "../../assets/Add-Doctor.svg";
 import img_DoctorList from "../../assets/Doctor-List.svg";
+import img_users from "../../assets/users.svg";
 import Navbar from "../Navbar/Navbar";
 import Appointments from "../Appointments/Appointments";
 import AddDoctor from "../Add Doctor/AddDoctor";
@@ -10,6 +11,7 @@ import ListDoctor from "../List Doctor/ListDoctor";
 import AppointmentCancelled from "../Appointment Cancelled/AppointmentCancelled";
 import AppointmentCompleted from "../Appointment Completed/AppointmentCompleted";
 import Chat from "../Chat/Chat";
+import Users from "../Users/Users";
 
 function Home() {
   const location = useLocation();
@@ -24,6 +26,7 @@ function Home() {
       "add-doctor": "Add Doctor",
       "appointment-cancelled": "Appointments Cancelled",
       "appointment-completed": "Appointments Completed",
+      users: "Users",
       "doctors-list": "Doctors List",
     };
 
@@ -34,15 +37,14 @@ function Home() {
 
   const handleChangeContent = (selectedContent) => {
     setContent(selectedContent);
-
     const routeMap = {
       Appointments: "/admin/appointment",
       "Add Doctor": "/admin/add-doctor",
       "Appointments Cancelled": "/admin/appointment-cancelled",
       "Appointments Completed": "/admin/appointment-completed",
+      Users: "/admin/users",
       "Doctors List": "/admin/doctors-list",
     };
-
     navigator(routeMap[selectedContent]);
   };
 
@@ -61,6 +63,11 @@ function Home() {
       title: "Appointments Completed",
       icon: img_appointment,
       component: <AppointmentCompleted />,
+    },
+    {
+      title: "Users",
+      icon: img_users,
+      component: <Users />,
     },
     {
       title: "Add Doctor",

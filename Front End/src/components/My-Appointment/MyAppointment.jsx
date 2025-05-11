@@ -35,6 +35,7 @@ function MyAppointment() {
     };
 
     socket.on("notification", (notification) => {
+      console.log(notification);
       setChange(notification);
     });
 

@@ -15,6 +15,7 @@ const notificationSchema = new mongoose.Schema(
         "appointment_cancelled",
         "appointment_completed",
         "patient_payment",
+        "payment_cancelled",
       ],
       required: [true, "type is required"],
     },

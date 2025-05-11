@@ -9,6 +9,8 @@ import {
   FaTimes,
   FaCalendarCheck,
   FaCalendarTimes,
+  FaMoneyBillWave,
+  FaTimesCircle,
 } from "react-icons/fa";
 import { socket } from "../../../utils/socket";
 import { toast } from "react-toastify";
@@ -28,7 +30,6 @@ function Notification() {
       return;
     }
 
-    // جلب الإشعارات
     const fetchData = async () => {
       try {
         const response = await axios.get(
@@ -115,6 +116,10 @@ function Notification() {
         return <FaCheck className="text-blue-500 text-lg" />;
       case "reminder":
         return <IoMdNotifications className="text-yellow-500 text-lg" />;
+      case "patient_payment":
+        return <FaMoneyBillWave className="text-purple-500 text-lg" />;
+      case "payment_cancelled":
+        return <FaTimesCircle className="text-red-500 text-lg" />;
       default:
         return <IoMdNotifications className="text-gray-500 text-lg" />;
     }
@@ -136,7 +141,6 @@ function Notification() {
 
       {showNotifications && (
         <div className="absolute top-12 right-0 w-80 bg-white rounded-lg shadow-xl z-50 border border-gray-200">
-          {/* Header */}
           <div className="flex justify-between items-center p-3 border-b border-gray-200">
             <h3 className="font-semibold text-gray-700">Notifications</h3>
             <button
@@ -147,7 +151,6 @@ function Notification() {
             </button>
           </div>
 
-          {/* Notifications List */}
           <div className="max-h-96 overflow-y-auto">
             {notifications.length === 0 ? (
               <div className="p-4 text-center text-gray-500">

@@ -80,8 +80,8 @@ const createAppointment = asyncErrorHandler(async (req, res, next) => {
     "new",
     req.user.name,
     doctor.name,
+    admin.email,
     new Date().toLocaleString(),
-    admin.email
   );
 });
 
@@ -138,9 +138,9 @@ const cancelAppointment = asyncErrorHandler(async (req, res, next) => {
     await sendEmail(
       "cancelled",
       user.name,
-      appointment.doctor.name,
+      appointment.doctor.name , 
+      user.email,
       new Date().toLocaleString(),
-      user.email
     );
   } else {
     // create Notification tp admin
@@ -148,8 +148,8 @@ const cancelAppointment = asyncErrorHandler(async (req, res, next) => {
       "cancelled",
       user.name,
       appointment.doctor.name,
+      admin.email,
       new Date().toLocaleString(),
-      admin.email
     );
   }
 });
@@ -208,8 +208,8 @@ const completedAppointment = asyncErrorHandler(async (req, res, next) => {
     "completed",
     user.name,
     appointment.doctor.name,
-    new Date().toLocaleString(),
-    user.email
+    user.email,
+    new Date().toLocaleString()
   );
 });
 
@@ -224,11 +224,39 @@ const paidAppointment = asyncErrorHandler(async (req, res, next) => {
     { new: true }
   );
 
+  const io = req.app.get("io");
+  const connectedUsers = req.app.get("connectedUsers");
+
+  if (req.user.role === "admin") {
+    await sendNotification(
+      io,
+      connectedUsers,
+      appointment.user._id,
+      "patient_payment",
+      `Payment confirmed for appointment with Dr. ${
+        appointment.doctor.name
+      } on ${new Date().toLocaleDateString()}`
+    );
+  }
+
   if (!appointment) {
     return next(new ApiError("not found appointment by id", 404));
   }
 
   res.status(200).json({ status: "success", data: appointment });
+
+  if (req.user.role === "admin") {
+    const user = await User.findById(appointment.user._id);
+
+    await sendEmail(
+      "payment_confirmed",
+      user.name,
+      appointment.doctor.name,
+      user.email,
+      new Date().toLocaleDateString(),
+      appointment.doctor.appointmentFee
+    );
+  }
 });
 
 const cancelPaidAppointment = asyncErrorHandler(async (req, res, next) => {
@@ -244,6 +272,21 @@ const cancelPaidAppointment = asyncErrorHandler(async (req, res, next) => {
 
   if (!appointment) {
     return next(new ApiError(`not found appointment by id => ${id}`, 400));
+  }
+
+  const io = req.app.get("io");
+  const connectedUsers = req.app.get("connectedUsers");
+
+  if (req.user.role === "admin") {
+    await sendNotification(
+      io,
+      connectedUsers,
+      appointment.user._id,
+      "payment_cancelled",
+      `Payment Cancelled for appointment with Dr. ${
+        appointment.doctor.name
+      } on ${new Date().toLocaleDateString()}`
+    );
   }
 
   res.status(200).json({ status: "success", data: appointment });

@@ -27,7 +27,7 @@ router
 router
   .route("/:id")
   .get(getSpecifyUser)
-  .put(validatorUpdateUser, allowedTo("admin"), updateUser)
-  .delete(validatorDeleteUser, allowedTo("admin"), deleteUser);
+  .put(validatorUpdateUser, protectAuth, allowedTo("admin"), updateUser)
+  .delete(validatorDeleteUser, protectAuth, allowedTo("admin"), deleteUser);
 
 module.exports = router;

@@ -4,8 +4,10 @@ const sendEmail = async (
   type,
   patientName,
   doctorName,
+  to,
   appointmentDate = null,
-  to
+  amount = null,
+  paymentMethod = null
 ) => {
   const transporter = nodemailer.createTransport({
     host: process.env.HOST_EMAIL,
@@ -15,8 +17,6 @@ const sendEmail = async (
       pass: process.env.PASS_EMAIL,
     },
   });
-
-  console.log("email to", to);
 
   const emailTemplates = {
     new: {
@@ -33,7 +33,7 @@ const sendEmail = async (
       statusText: "cancelled",
       actionButton: true,
       buttonText: "Reschedule Appointment",
-      link: "",
+      link: "http://localhost:5173/doctors",
     },
     completed: {
       subject: `Appointment with Dr. ${doctorName} Completed`,
@@ -41,7 +41,26 @@ const sendEmail = async (
       statusText: "completed",
       actionButton: false,
       footerNote: "We hope to see you again soon!",
+    },
+    payment_confirmed: {
+      subject: `Payment Confirmed for Appointment with Dr. ${doctorName}`,
+      headerColor: "#9C27B0",
+      statusText: "payment confirmed",
+      actionButton: true,
+      buttonText: "View Appointment",
       link: "http://localhost:5173/my-appointment",
+      footerNote: "Thank you for your payment!",
+      showPayment: true,
+    },
+    payment_cancelled: {
+      subject: `Payment Cancelled for Appointment with Dr. ${doctorName}`,
+      headerColor: "#FF5722",
+      statusText: "payment cancelled",
+      actionButton: true,
+      buttonText: "Try Payment Again",
+      link: "http://localhost:5173/payment",
+      footerNote: "Please try again or contact support.",
+      showPayment: true,
     },
   };
 
@@ -64,12 +83,14 @@ const sendEmail = async (
           template.headerColor
         }; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-top: 15px; }
         .appointment-date { font-weight: bold; color: ${template.headerColor}; }
+        .payment-details { margin: 15px 0; padding: 15px; background: #f9f9f9; border-radius: 5px; }
+        .payment-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
       </style>
     </head>
     <body>
       <div class="container">
         <div class="header">
-          <h1>Appointment ${template.statusText.toUpperCase()}</h1>
+          <h1>${template.subject}</h1>
         </div>
         <div class="content">
           <p>Dear <strong>${patientName}</strong>,</p>
@@ -80,16 +101,41 @@ const sendEmail = async (
           
           ${
             appointmentDate
-              ? `<p>Scheduled for: <span class="appointment-date">${new Date(
-                  appointmentDate
-                ).toLocaleString()}</span></p>`
+              ? `
+            <p>Scheduled for: <span class="appointment-date">${new Date(
+              appointmentDate
+            ).toLocaleString()}</span></p>
+          `
+              : ""
+          }
+          
+          ${
+            template.showPayment
+              ? `
+            <div class="payment-details">
+              <div class="payment-row">
+                <span>Amount:</span>
+                <span><strong>$${amount?.toFixed(2) || "0.00"}</strong></span>
+              </div>
+              ${
+                paymentMethod
+                  ? `
+                <div class="payment-row">
+                  <span>Payment Method:</span>
+                  <span>${paymentMethod}</span>
+                </div>
+              `
+                  : ""
+              }
+            </div>
+          `
               : ""
           }
           
           ${
             template.actionButton
               ? `
-            <a href="http://localhost:5173/doctors" class="button">
+            <a href="${template.link}" class="button">
               ${template.buttonText}
             </a>
           `
