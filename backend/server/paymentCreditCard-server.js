@@ -36,7 +36,7 @@ const paidAppointment = async (session) => {
     { new: true }
   );
 
-  const admin = await User.findOne({ role: admin });
+  const admin = await User.findOne({ role: "admin" });
   const io = req.app.get("io");
   const connectedUsers = req.app.get("connectedUsers");
 
