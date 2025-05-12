@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const { createServer } = require("node:http");
 const { Server } = require("socket.io");
 const cors = require("cors");
+const compression = require("compression");
 const errorHandler = require("./middleware/errorHandler");
 const ApiError = require("./utils/apiError");
 const dbConnection = require("./config/dbConnection");
@@ -33,6 +34,7 @@ const io = new Server(server, {
 
 app.use(morgan("dev"));
 app.use(cors("*"));
+app.use(compression());
 dotenv.config();
 
 app.use(express.json());
