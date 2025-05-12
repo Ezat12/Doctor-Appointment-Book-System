@@ -6,8 +6,19 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Home from "./components/Home/Home";
 import Doctor from "./components/Doctor/Doctor";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { socket } from "./Utils/socket";
 
 function App() {
+  const user = useSelector((state) => state.user.user);
+
+  useEffect(() => {
+    if (user?.role === "admin") {
+      socket.emit("register", user._id);
+    }
+  }, [user?._id]);
+
   return (
     <>
       <Routes>

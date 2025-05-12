@@ -4,12 +4,7 @@ import { io } from "socket.io-client";
 import axios from "axios";
 import Cookies from "js-cookie";
 import img_blank from "../../assets/image-myprofile.png";
-
-const socket = io("http://localhost:2020", {
-  transports: ["websocket", "polling"],
-  autoConnect: true,
-  withCredentials: true,
-});
+import { socket } from "../../Utils/socket";
 
 function AdminChat() {
   const user = useSelector((state) => state.user.user);
@@ -66,7 +61,6 @@ function AdminChat() {
     if (user.role === "admin") fetchPatients();
   }, [user?._id]);
 
-  // جلب الرسائل عند اختيار مريض
   useEffect(() => {
     if (!selectedPatient) return;
 
@@ -80,14 +74,6 @@ function AdminChat() {
           { headers: { Authorization: `Bearer ${Cookies.get("token")}` } }
         );
         setMessages(response.data.data);
-
-        // تصفير العداد عند فتح المحادثة
-        if (unreadCounts[selectedPatient._id] > 0) {
-          setUnreadCounts((prev) => ({
-            ...prev,
-            [selectedPatient._id]: 0,
-          }));
-        }
       } catch (error) {
         console.error("Error fetching messages:", error);
       } finally {
@@ -96,19 +82,20 @@ function AdminChat() {
     };
 
     fetchMessages();
-  }, [selectedPatient, user?._id, unreadCounts]);
+  }, [selectedPatient, user?._id]);
 
-  // الاستماع للرسائل الجديدة
   useEffect(() => {
     const handleNewMessage = (message) => {
-      // إضافة المريض الجديد إلى قائمة المرضى لو مش موجود
+      const senderId = message.sender._id;
+
+      // أضف المريض إلى القائمة لو مش موجود
       if (
-        message.sender._id !== user?._id &&
-        !patients.some((p) => p.user._id === message.sender._id)
+        senderId !== user?._id &&
+        !patients.some((p) => p.user._id === senderId)
       ) {
         const newPatient = {
           user: {
-            _id: message.sender._id,
+            _id: senderId,
             name: message.sender.name || "Unknown User",
             profileImage: message.sender.profileImage || img_blank,
           },
@@ -117,43 +104,30 @@ function AdminChat() {
         setPatients((prev) => [...prev, newPatient]);
       }
 
-      // إضافة الرسالة إلى الشات لو المريض هو المختار
+      // إذا كانت المحادثة المفتوحة هي مع نفس المستخدم، أضف الرسالة
       if (
-        (message.sender._id === selectedPatient?._id &&
-          message.receiver._id === user?._id) ||
-        (message.sender._id === user?._id &&
-          message.receiver._id === selectedPatient?._id)
+        selectedPatient &&
+        (senderId === selectedPatient._id ||
+          message.receiver._id === selectedPatient._id)
       ) {
         setMessages((prev) => [...prev, message]);
       }
 
-      // زيادة العداد إذا كانت الرسالة جديدة ولم يتم فتح الشات
-      if (message.sender._id !== user?._id && !showChat) {
+      // تحديث عداد الرسائل غير المقروءة دائماً إذا لم تكن من الأدمن
+      if (senderId !== user?._id) {
         setUnreadCounts((prev) => {
-          const newCounts = {
+          const updated = {
             ...prev,
-            [message.sender._id]: (prev[message.sender._id] || 0) + 1,
+            [senderId]: (prev[senderId] || 0) + 1,
           };
-
-          // حساب العدد الكلي للإشعارات غير المقروءة
-          const totalUnread = Object.values(newCounts).reduce(
-            (sum, count) => sum + count,
-            0
-          );
-          setUnreadAll(totalUnread);
-
-          return newCounts;
+          setUnreadAll(Object.values(updated).reduce((a, b) => a + b, 0));
+          return updated;
         });
       }
     };
 
-    const onConnect = () => {
-      setIsConnected(true);
-    };
-
-    const onDisconnect = () => {
-      setIsConnected(false);
-    };
+    const onConnect = () => setIsConnected(true);
+    const onDisconnect = () => setIsConnected(false);
 
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
@@ -164,9 +138,8 @@ function AdminChat() {
       socket.off("disconnect", onDisconnect);
       socket.off("newMessage", handleNewMessage);
     };
-  }, [selectedPatient, user?._id, showChat, patients]);
+  }, [selectedPatient, user?._id, patients]);
 
-  // إرسال الرسالة
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!messageText.trim() || !selectedPatient) return;
@@ -185,17 +158,30 @@ function AdminChat() {
     }
   };
 
-  // إدارة إظهار/إخفاء قائمة المرضى
   const togglePatientsList = () => {
     setShowPatientsList(!showPatientsList);
   };
 
-  // اختيار مريض لبدء المحادثة
   const selectPatient = async (patient) => {
     setSelectedPatient(patient.user);
-    setUnreadAll(unreadAll - patient.isRead);
     setShowChat(true);
     setShowPatientsList(false);
+
+    // تصفير عدد الرسائل الغير مقروءة لهذا المريض
+    setUnreadCounts((prev) => ({
+      ...prev,
+      [patient.user._id]: 0,
+    }));
+
+    const newTotal = Object.entries(unreadCounts).reduce(
+      (total, [id, count]) => {
+        if (id === patient.user._id) return total;
+        return total + count;
+      },
+      0
+    );
+    setUnreadAll(newTotal);
+
     try {
       await axios.put(
         `${import.meta.env.VITE_BASE_URL_SERVER}/message/readMessage`,
@@ -213,7 +199,6 @@ function AdminChat() {
   return (
     <div className="fixed right-6 bottom-6 z-50">
       <div className="flex flex-col items-end gap-3">
-        {/* قائمة المرضى */}
         {showPatientsList && (
           <div className="flex flex-col gap-3 w-[250px] max-h-[400px] overflow-y-auto bg-white rounded-lg shadow-lg p-2">
             {patients.map((patient, index) => (
@@ -248,7 +233,6 @@ function AdminChat() {
           </div>
         )}
 
-        {/* زر الدردشة */}
         {!showChat && (
           <div className="relative">
             <div
@@ -280,7 +264,6 @@ function AdminChat() {
                 </svg>
               </div>
 
-              {/* عداد الإشعارات غير المقروءة */}
               {unreadAll > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                   {unreadAll > 9 ? "9+" : unreadAll}
@@ -293,7 +276,6 @@ function AdminChat() {
 
       {showChat && (
         <div className="w-[400px] bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
-          {/* Header */}
           <div className="bg-blue-600 p-3 flex justify-between items-center">
             <div className="flex items-center gap-3">
               <button
@@ -340,7 +322,6 @@ function AdminChat() {
             </div>
           </div>
 
-          {/* Messages */}
           <div className="h-[400px] overflow-y-auto p-4 bg-gray-50">
             {messages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-gray-500">
@@ -397,7 +378,6 @@ function AdminChat() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input */}
           {selectedPatient && (
             <form
               onSubmit={handleSendMessage}

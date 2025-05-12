@@ -10,6 +10,8 @@ import {
   FaTimes,
   FaCalendarCheck,
   FaCalendarTimes,
+  FaMoneyBillWave,
+  FaTimesCircle,
 } from "react-icons/fa";
 import { socket } from "../../Utils/socket";
 
@@ -46,6 +48,7 @@ function Notification() {
     socket.emit("register", user._id);
 
     socket.on("notification", (notification) => {
+      console.log(notification);
       setNotifications((prev) => [notification, ...prev]);
       toast.info(notification.message, { position: "top-center" });
     });
@@ -92,21 +95,22 @@ function Notification() {
         ? "/admin/appointment-completed"
         : "admin/user";
 
-    if (targetPath) {
-      setTimeout(() => {
-        navigator(targetPath, { replace: true });
-        location.reload();
-      }, 200);
-    }
-
     if (!read) {
       await axios.put(
         `${
           import.meta.env.VITE_BASE_URL_SERVER
         }/notification/read-notification/${id}`,
         {},
-        { headers: { Authorization: `Bearer ${Cookies.get("auth-token")}` } }
+        {
+          headers: { Authorization: `Bearer ${Cookies.get("auth-token")}` },
+        }
       );
+    }
+    if (targetPath) {
+      setTimeout(async () => {
+        navigator(targetPath, { replace: true });
+        location.reload();
+      }, 200);
     }
   };
 
@@ -129,6 +133,10 @@ function Notification() {
         return <FaCheck className="text-blue-500 text-lg" />;
       case "reminder":
         return <IoMdNotifications className="text-yellow-500 text-lg" />;
+      case "patient_payment":
+        return <FaMoneyBillWave className="text-purple-500 text-lg" />;
+      case "payment_cancelled":
+        return <FaTimesCircle className="text-red-500 text-lg" />;
       default:
         return <IoMdNotifications className="text-gray-500 text-lg" />;
     }
