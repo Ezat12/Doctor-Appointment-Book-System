@@ -34,7 +34,7 @@ const paidAppointment = async (session) => {
     session.client_reference_id,
     { is_paid: true },
     { new: true }
-  );
+  ).populate("user doctor");
 
   const admin = await User.findOne({ role: "admin" });
   const io = req.app.get("io");
@@ -48,7 +48,7 @@ const paidAppointment = async (session) => {
     admin._id,
     "patient_payment",
     `Payment confirmed for patient ${appointment.user.name} with amount ${
-      session.amount_total
+      session.amount_total / 100
     } for appointment with Dr. ${
       appointment.doctor.name
     } on ${new Date().toLocaleDateString()}`
