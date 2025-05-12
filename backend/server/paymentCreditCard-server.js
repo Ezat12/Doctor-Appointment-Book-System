@@ -25,13 +25,14 @@ const checkOutSession = asyncErrorHandler(async (req, res, next) => {
 });
 
 const webhookCheckout = asyncErrorHandler(async (req, res, next) => {
+  const body = req.body;
   const sig = req.headers["stripe-signature"];
 
   let event;
 
   try {
     event = stripe.webhooks.constructEvent(
-      req.body,
+      body,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET
     );
