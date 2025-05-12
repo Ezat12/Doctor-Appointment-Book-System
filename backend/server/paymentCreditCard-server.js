@@ -40,8 +40,6 @@ const paidAppointment = async (session, req) => {
   const io = req.app.get("io");
   const connectedUsers = req.app.get("connectedUsers");
 
-  console.log(admin);
-
   await sendNotification(
     io,
     connectedUsers,
@@ -84,9 +82,9 @@ const webhookCheckout = asyncErrorHandler(async (req, res, next) => {
     console.log("Yes Complete");
 
     const session = event.data.object;
+    res.status(200).json({ status: "success" });
 
     await paidAppointment(session, req);
-    res.status(200).json({ status: "success" });
   } else {
     console.log("Back");
   }

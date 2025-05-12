@@ -21,7 +21,6 @@ const sendNotification = async (
     const populatedNotification = await Notification.findById(notification._id);
 
     const socketId = connectedUser[recipientId.toString()];
-    console.log("Yes");
     if (socketId) {
       io.to(socketId).emit("notification", populatedNotification);
     }
