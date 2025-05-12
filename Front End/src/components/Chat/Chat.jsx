@@ -189,7 +189,6 @@ function PatientChat() {
         </div>
       ) : (
         <div className="w-[400px] bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
-          {/* Header */}
           <div className="bg-blue-600 p-3 flex justify-between items-center">
             <div className="flex items-center gap-2">
               <button
@@ -214,7 +213,6 @@ function PatientChat() {
             </div>
           </div>
 
-          {/* Messages */}
           <div className="h-[400px] overflow-y-auto p-4 bg-gray-50">
             {messages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-gray-500">

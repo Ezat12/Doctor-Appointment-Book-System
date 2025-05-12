@@ -88,7 +88,6 @@ function AdminChat() {
     const handleNewMessage = (message) => {
       const senderId = message.sender._id;
 
-      // أضف المريض إلى القائمة لو مش موجود
       if (
         senderId !== user?._id &&
         !patients.some((p) => p.user._id === senderId)
@@ -104,7 +103,6 @@ function AdminChat() {
         setPatients((prev) => [...prev, newPatient]);
       }
 
-      // إذا كانت المحادثة المفتوحة هي مع نفس المستخدم، أضف الرسالة
       if (
         selectedPatient &&
         (senderId === selectedPatient._id ||
@@ -113,7 +111,6 @@ function AdminChat() {
         setMessages((prev) => [...prev, message]);
       }
 
-      // تحديث عداد الرسائل غير المقروءة دائماً إذا لم تكن من الأدمن
       if (senderId !== user?._id) {
         setUnreadCounts((prev) => {
           const updated = {
@@ -167,7 +164,6 @@ function AdminChat() {
     setShowChat(true);
     setShowPatientsList(false);
 
-    // تصفير عدد الرسائل الغير مقروءة لهذا المريض
     setUnreadCounts((prev) => ({
       ...prev,
       [patient.user._id]: 0,
