@@ -29,7 +29,7 @@ const checkOutSession = asyncErrorHandler(async (req, res, next) => {
   res.status(200).json({ status: "success", session });
 });
 
-const paidAppointment = async (session) => {
+const paidAppointment = async (session, req) => {
   const appointment = await Appointment.findByIdAndUpdate(
     session.client_reference_id,
     { is_paid: true },
@@ -85,7 +85,7 @@ const webhookCheckout = asyncErrorHandler(async (req, res, next) => {
 
     const session = event.data.object;
 
-    await paidAppointment(session);
+    await paidAppointment(session, req);
     res.status(200).json({ status: "success" });
   } else {
     console.log("Back");
