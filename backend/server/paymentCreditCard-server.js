@@ -19,6 +19,7 @@ const checkOutSession = asyncErrorHandler(async (req, res, next) => {
     success_url: "http://localhost:5173/my-appointment",
     cancel_url: "http://localhost:5173/my-appointment",
     customer_email: req.user.email,
+    client_reference_id: req.body.doctorId,
   });
 
   res.status(200).json({ status: "success", session });
@@ -41,7 +42,7 @@ const webhookCheckout = asyncErrorHandler(async (req, res, next) => {
   }
 
   console.log(req.body);
-  console.log(event.type);
+  console.log(event.data.object);
 
   if (event.type === "checkout.session.completed") {
     console.log("Yes Complete");
