@@ -40,6 +40,8 @@ const paidAppointment = async (session) => {
   const io = req.app.get("io");
   const connectedUsers = req.app.get("connectedUsers");
 
+  console.log(admin);
+
   await sendNotification(
     io,
     connectedUsers,
