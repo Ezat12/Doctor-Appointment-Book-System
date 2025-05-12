@@ -21,6 +21,7 @@ const paymentRoute = require("./routes/paymentCreditCardRoutes");
 const notificationRoute = require("./routes/notificationRoutes");
 
 const { handlerMessage } = require("./utils/socketHandler/handlerMessage");
+const { webhookCheckout } = require("./server/paymentCreditCard-server");
 
 const server = createServer(app);
 const io = new Server(server, {
@@ -40,9 +41,7 @@ dotenv.config();
 app.post(
   "/webhook-checkout",
   express.raw({ type: "application/json" }),
-  (req, res, next) => {
-    console.log("Yes webhook");
-  }
+  webhookCheckout
 );
 
 app.use(express.json());
