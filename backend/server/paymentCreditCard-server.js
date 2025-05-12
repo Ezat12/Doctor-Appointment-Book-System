@@ -40,6 +40,9 @@ const webhookCheckout = asyncErrorHandler(async (req, res, next) => {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
+  console.log("webhookCheckOut Session");
+  console.log(event.type);
+
   if (event.type === "checkout.session.completed") {
     console.log("Yes Complete");
 
