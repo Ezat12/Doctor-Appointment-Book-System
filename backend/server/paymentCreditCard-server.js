@@ -1,5 +1,6 @@
 const { asyncErrorHandler } = require("express-error-catcher");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KRY);
+const Appointment = require("../models/appointmentModels");
 
 const checkOutSession = asyncErrorHandler(async (req, res, next) => {
   const session = await stripe.checkout.sessions.create({
@@ -41,11 +42,16 @@ const webhookCheckout = asyncErrorHandler(async (req, res, next) => {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  console.log(req.body);
-  console.log(event.data.object);
-
   if (event.type === "checkout.session.completed") {
     console.log("Yes Complete");
+
+    const appointment = await Appointment.findByIdAndUpdate(
+      event.data.object.client_reference_id,
+      { is_paid: true },
+      { new: true }
+    );
+
+    console.log(appointment);
 
     res.status(200).json({ status: "success" });
   } else {
