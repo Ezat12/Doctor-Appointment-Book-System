@@ -37,6 +37,14 @@ app.use(cors("*"));
 app.use(compression());
 dotenv.config();
 
+app.post(
+  "/webhook-checkout",
+  express.raw({ type: "application/json" }),
+  (req, res, next) => {
+    console.log("Yes webhook");
+  }
+);
+
 app.use(express.json());
 
 dbConnection();
