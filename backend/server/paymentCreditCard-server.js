@@ -30,6 +30,7 @@ const checkOutSession = asyncErrorHandler(async (req, res, next) => {
 });
 
 const paidAppointment = async (session, req) => {
+  console.log("Session", session.client_reference_id);
   const appointment = await Appointment.findByIdAndUpdate(
     session.client_reference_id,
     { is_paid: true },
