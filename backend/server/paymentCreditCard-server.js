@@ -4,7 +4,6 @@ const Appointment = require("../models/appointmentModels");
 const User = require("../models/userModels");
 const { sendNotification } = require("./notification-server");
 const sendEmail = require("../utils/sendEmail");
-const { Types } = require("mongoose");
 
 const checkOutSession = asyncErrorHandler(async (req, res, next) => {
   const session = await stripe.checkout.sessions.create({
@@ -33,7 +32,7 @@ const checkOutSession = asyncErrorHandler(async (req, res, next) => {
 const paidAppointment = async (session, req) => {
   console.log("Session", session.client_reference_id);
   const appointment = await Appointment.findByIdAndUpdate(
-    Types.ObjectId(session.client_reference_id),
+    session.client_reference_id,
     { is_paid: true },
     { new: true }
   ).populate("user doctor");
